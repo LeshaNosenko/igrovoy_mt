@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Выгрузка объектов</title>
+</head>
+<body>
+	<hgroup>
+    <h1>Экспорт объектов баз данных</h1>
+    <h2>PostgreSQL</h2>
+    <form action="/export_pg" method="post">
+	<fieldset>
+        <label for="host_pg">Хост:</label>
+        <input type="text" id="host_pg" name="host_pg" placeholder="Хост"><br><br>
+
+        <label for="port_pg">Порт:</label>
+        <input type="text" id="port_pg" name="port_pg" placeholder="Порт"><br><br>
+
+        <label for="db_name_pg">Наименование БД:</label>
+        <input type="text" id="db_name_pg" name="db_name_pg" placeholder="Наименование БД"><br><br>
+
+        <label for="user_pg">Пользователь:</label>
+        <input type="text" id="user_pg" name="user_pg" placeholder="Пользователь"><br><br>
+
+        <label for="password_pg">Пароль:</label>
+        <input type="password" id="password_pg" name="password_pg" placeholder="Пароль"><br><br>
+
+        <label for="author_pg">Автор миграции:</label>
+        <input type="text" id="author_pg" name="author_pg" placeholder="Автор миграции"><br><br>
+
+        <h3>Выбор объектов для экспорта:</h3>
+        <input type="checkbox" id="export_roles" name="export_roles">
+        <label for="export_roles">Экспорт ролей</label><br>
+		
+		<input type="checkbox" id="export_grants" name="export_grants">
+        <label for="export_grants">Экспорт грантов</label><br>
+		
+		<input type="checkbox" id="export_datatypes" name="export_datatypes">
+        <label for="export_roles">Экспорт типов данных</label><br>
+
+		<input type="checkbox" id="export_functions" name="export_functions">
+        <label for="export_functions">Экспорт функций</label><br>
+
+        <input type="checkbox" id="export_procedures" name="export_procedures">
+        <label for="export_procedures">Экспорт процедур</label><br>
+
+        <input type="checkbox" id="export_tables" name="export_tables">
+        <label for="export_tables">Экспорт таблиц</label><br>
+
+		<input type="checkbox" id="export_constraints" name="export_constraints">
+        <label for="export_constraints">Экспорт ограничений</label><br>
+
+        <input type="checkbox" id="export_triggers" name="export_triggers">
+        <label for="export_triggers">Экспорт триггеров</label><br>
+		
+		<input type="checkbox" id="export_matviews" name="export_matviews">
+        <label for="export_matviews">Экспорт мат.представлений</label><br>
+		
+		<input type="checkbox" id="export_views" name="export_views">
+        <label for="export_views">Экспорт представлений</label><br>
+        <input type="submit" value="Экспортировать из pg">
+	</fieldset>
+    </form>
+</hgroup>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</body>
+</html>
