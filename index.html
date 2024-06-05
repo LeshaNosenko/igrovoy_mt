@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <title>Игровой вызов - Первый турнир Результаты</title>
     <style>
-		body {
-			font-family: Arial, sans-serif;
-			color: #fff;
-			background-color: #fff;
+	
+		:root {
+			--original-background: #2f2f2f;
 		}
+		
+		body {
+            font-family: Arial, sans-serif;
+            color: #fff;
+            background-color: var(--original-background);
+        }
 
 		.widget {
 			padding: 20px;
@@ -51,7 +56,7 @@
 		}
 
 		.highlight {
-			background-color: yellow;
+			background-color: #ffc107;
 		}
 
 		.loader {
@@ -232,12 +237,13 @@
                 document.getElementById('loader').style.display = 'block';
                 document.getElementById('content').style.display = 'none';
                 const result = await searchPlayerByName(searchInput, offset, limit);
-                if (!result) {
-                    document.getElementById('loader').textContent = 'Пользователь не найден.';
-                } else {
-                    offset = result.offset;
-                    limit = result.limit;
-                }
+				if (!result) {
+					document.getElementById('loader').textContent = 'Пользователь не найден.';
+					document.body.style.backgroundColor = 'var(--original-background)'; // Возвращаем оригинальный фон
+				} else {
+					offset = result.offset;
+					limit = result.limit;
+				}
                 searchActive = false;
                 intervalId = setInterval(() => {
                     fetchData(offset, limit, true);
