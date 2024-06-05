@@ -89,6 +89,26 @@
         #loadMoreBtn {
             margin-top: 10px;
         }
+
+        .sort-arrow {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            vertical-align: middle;
+            border: 4px solid transparent;
+            border-top: 4px solid #fff;
+            transition: transform 0.3s ease;
+        }
+
+		.sort-arrow.up {
+			transform: rotate(180deg);
+			border-top-color: #3498db;
+		}
+
+		.sort-arrow.down {
+			transform: rotate(0deg);
+			border-top-color: #e74c3c;
+		}
     </style>
 </head>
 <body>
@@ -110,7 +130,10 @@
                         <th>Бои</th>
                         <th>Победы</th>
                         <th>Суммарный опыт</th>
-                        <th>15 боёв с наибольшим количеством чистого опыта (по убыванию)</th>
+                        <th>
+                            15 боёв с наибольшим количеством чистого опыта
+                            <span class="sort-arrow down" onclick="sortColumn('history')" title="Нажмите, чтобы сортировать опыт"></span>
+                        </th>
                         <th>Максимальный опыта</th>
                         <th>Средний опыт по 15 боям</th>
                     </tr>
@@ -126,66 +149,91 @@
         let searchActive = false;
         let intervalId = null;
         let highlightedPlayer = null;
+		let globalSortOrder = 'desc';
 
-        async function fetchData(offset, limit, clearTable = true) {
-            const url = `https://challenge.tanki.su/api/v1/tournaments/585?offset=${offset}&limit=${limit}&langru&column=rating`;
-            try {
-                const response = await fetch(url);
+		async function fetchData(offset, limit, clearTable = true) {
+			const url = `https://challenge.tanki.su/api/v1/tournaments/585?offset=${offset}&limit=${limit}&langru&column=rating`;
 
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
+			try {
+				const response = await fetch(url);
 
-                const responseData = await response.json();
-                console.log('Fetched data:', responseData);
+				if (!response.ok) {
+					throw new Error('Network response was not ok ' + response.statusText);
+				}
 
-                let players = responseData.data.participants;
+				const responseData = await response.json();
+				console.log('Fetched data:', responseData);
 
-                if (players && Array.isArray(players)) {
-                    const playersBody = document.getElementById('playersBody');
+				let players = responseData.data.participants;
 
-                    if (clearTable) {
-                        playersBody.innerHTML = '';
-                    }
+				if (players && Array.isArray(players)) {
+					const playersBody = document.getElementById('playersBody');
 
-                    players.forEach(player => {
-                        player.results.history.sort((a, b) => b - a);
+					if (clearTable) {
+						playersBody.innerHTML = '';
+					}
 
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                        <td class="player-position">${player.position}</td>
-                        <td class="player-name">${player.user.name}</td>
-                        <td>${player.results.battles}</td>
-                        <td>${player.results.wins}</td>
-                        <td class="player-total">${player.results.total}</td>
-                        <td>${player.results.history.join(', ')}</td>
-                        <td>${player.results.max}</td>
-                        <td>${player.results.avg.toFixed(2)}</td>
-                    `;
-                        playersBody.appendChild(tr);
+					players.forEach(player => {
+						if (globalSortOrder === 'asc') {
+							player.results.history.sort((a, b) => a - b);
+						} else {
+							player.results.history.sort((a, b) => b - a);
+						}
 
-                        if (highlightedPlayer && player.user.name.toLowerCase() === highlightedPlayer.toLowerCase()) {
-                            tr.classList.add('highlight');
-                            setTimeout(() => {
-                                tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }, 500);
-                        }
-                    });
+						const tr = document.createElement('tr');
+						tr.innerHTML = `
+						<td class="player-position">${player.position}</td>
+						<td class="player-name">${player.user.name}</td>
+						<td>${player.results.battles}</td>
+						<td>${player.results.wins}</td>
+						<td class="player-total">${player.results.total}</td>
+						<td class="player-history" data-sort-order="${globalSortOrder}">
+							<span>${player.results.history.join(', ')}</span>
+						</td>
+						<td>${player.results.max}</td>
+						<td>${player.results.avg.toFixed(2)}</td>
+					`;
+						playersBody.appendChild(tr);
 
-                    document.getElementById('loader').style.display = 'none';
-                    document.getElementById('content').style.display = 'block';
+						if (highlightedPlayer && player.user.name.toLowerCase() === highlightedPlayer.toLowerCase()) {
+							tr.classList.add('highlight');
+							setTimeout(() => {
+								tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+							}, 500);
+						}
+					});
 
-                    document.getElementById('prevBtn').disabled = offset === 0;
-                } else {
-                    throw new Error('Unexpected data structure');
-                }
-            } catch (error) {
-                document.getElementById('loader').textContent = 'Ошибка загрузки данных.';
-                console.error('Error fetching data:', error);
-            }
-        }
+					document.getElementById('loader').style.display = 'none';
+					document.getElementById('content').style.display = 'block';
 
-        async function searchPlayerByName(name, offset, limit) {
+					document.getElementById('prevBtn').disabled = offset === 0;
+				} else {
+					throw new Error('Unexpected data structure');
+				}
+			} catch (error) {
+				document.getElementById('loader').textContent = 'Ошибка загрузки данных.';
+				console.error('Error fetching data:', error);
+			}
+		}
+
+		function sortColumn(columnName) {
+			if (globalSortOrder === 'desc') {
+				globalSortOrder = 'asc';
+			} else {
+				globalSortOrder = 'desc';
+			}
+			const sortArrow = document.querySelector('.sort-arrow');
+			if (globalSortOrder === 'asc') {
+				sortArrow.classList.remove('down');
+				sortArrow.classList.add('up');
+			} else {
+				sortArrow.classList.remove('up');
+				sortArrow.classList.add('down');
+			}
+			fetchData(offset, limit);
+		}
+
+		async function searchPlayerByName(name, offset, limit) {
             const url = `https://challenge.tanki.su/api/v1/tournaments/585?offset=${offset}&limit=${limit}&langru&column=rating`;
             try {
                 const response = await fetch(url);
@@ -206,7 +254,6 @@
                         await fetchData(offset, limit, true);
                         return { offset, limit };
                     } else if (players.length === limit) {
-                        // Continue searching in the next page
                         return await searchPlayerByName(name, offset + limit, limit);
                     } else {
                         return false;
@@ -221,67 +268,30 @@
             }
         }
 
-        function loadMore() {
-            if (searchActive) return;
-            offset += limit;
-            fetchData(offset, limit);
-        }
+		async function initialize() {
+			await fetchData(offset, limit);
+			intervalId = setInterval(() => {
+				if (!searchActive) {
+					fetchData(offset, limit, true);
+				}
+			}, 5000);
+		}
 
-        function prevPage() {
-            if (searchActive) return;
-            if (offset >= limit) {
-                offset -= limit;
-                fetchData(offset, limit);
-            }
-        }
+		initialize();
 
-        async function search() {
-            const searchInput = document.getElementById('searchInput').value;
-            if (searchInput) {
-                searchActive = true;
-                highlightedPlayer = searchInput;
-                clearInterval(intervalId);
-                document.getElementById('loader').style.display = 'block';
-                document.getElementById('content').style.display = 'none';
-                const result = await searchPlayerByName(searchInput, offset, limit);
-                if (!result) {
-                    document.getElementById('loader').textContent = 'Пользователь не найден.';
-                    document.body.style.backgroundColor = 'var(--original-background)';
-                } else {
-                    offset = result.offset;
-                    limit = result.limit;
-                }
-                searchActive = false;
-                intervalId = setInterval(() => {
-                    fetchData(offset, limit, true);
-                }, 5000);
-            }
-        }
+		const loadMoreBtn = document.getElementById('loadMoreBtn');
+		const prevBtn = document.getElementById('prevBtn');
+		const searchBtn = document.getElementById('searchBtn');
 
-        async function initialize() {
-            await fetchData(offset, limit);
-            intervalId = setInterval(() => {
-                if (!searchActive) {
-                    fetchData(offset, limit, true);
-                }
-            }, 5000);
-        }
+		loadMoreBtn.addEventListener('click', loadMore);
+		prevBtn.addEventListener('click', prevPage);
+		searchBtn.addEventListener('click', search);
 
-        initialize();
-
-        const loadMoreBtn = document.getElementById('loadMoreBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const searchBtn = document.getElementById('searchBtn');
-
-        loadMoreBtn.addEventListener('click', loadMore);
-        prevBtn.addEventListener('click', prevPage);
-        searchBtn.addEventListener('click', search);
-
-        window.addEventListener('beforeunload', () => {
-            if (intervalId) {
-                clearInterval(intervalId);
-            }
-        });
+		window.addEventListener('beforeunload', () => {
+			if (intervalId) {
+				clearInterval(intervalId);
+			}
+		});
     </script>
 </body>
 </html>
