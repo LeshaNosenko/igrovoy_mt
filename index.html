@@ -93,6 +93,7 @@
     <script>
         let offset = 0;
         const limit = 40;
+        let intervalId = null;
 
         async function fetchData(offset, limit, clearTable = true, highlightName = null) {
             const url = `https://challenge.tanki.su/api/v1/tournaments/585?offset=${offset}&limit=${limit}&langru&column=rating`;
@@ -168,13 +169,12 @@
                     if (foundPlayer) {
                         document.getElementById('loader').style.display = 'none';
                         document.getElementById('content').style.display = 'block';
-                        await fetchData(offset, limit, true, name); // Load the page with the found player
-                        return true; // Player found, exit function
+                        await fetchData(offset, limit, true, name);
+                        return true;
                     } else if (players.length === limit) {
                         // Continue searching in the next page
                         return await searchPlayerByName(name, offset + limit, limit);
                     } else {
-                        // Player not found after exhausting all pages
                         return false;
                     }
                 } else {
@@ -213,6 +213,9 @@
 
         async function initialize() {
             await fetchData(offset, limit);
+            intervalId = setInterval(() => {
+                fetchData(offset, limit, true);
+            }, 5000);
         }
 
         initialize();
@@ -224,6 +227,12 @@
         loadMoreBtn.addEventListener('click', loadMore);
         prevBtn.addEventListener('click', prevPage);
         searchBtn.addEventListener('click', search);
+
+        window.addEventListener('beforeunload', () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        });
     </script>
 </body>
 </html>
