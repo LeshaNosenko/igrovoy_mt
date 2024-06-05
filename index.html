@@ -92,10 +92,12 @@
 
     <script>
         let offset = 0;
-        const limit = 40;
+        let limit = 40;
+        let searchActive = false;
         let intervalId = null;
+        let highlightedPlayer = null;
 
-        async function fetchData(offset, limit, clearTable = true, highlightName = null) {
+        async function fetchData(offset, limit, clearTable = true) {
             const url = `https://challenge.tanki.su/api/v1/tournaments/585?offset=${offset}&limit=${limit}&langru&column=rating`;
             try {
                 const response = await fetch(url);
@@ -129,7 +131,7 @@
                         `;
                         playersBody.appendChild(tr);
 
-                        if (highlightName && player.user.name.toLowerCase() === highlightName.toLowerCase()) {
+                        if (highlightedPlayer && player.user.name.toLowerCase() === highlightedPlayer.toLowerCase()) {
                             tr.classList.add('highlight');
                             setTimeout(() => {
                                 tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -150,7 +152,7 @@
             }
         }
 
-        async function searchPlayerByName(name, offset = 0, limit = 40) {
+        async function searchPlayerByName(name, offset, limit) {
             const url = `https://challenge.tanki.su/api/v1/tournaments/585?offset=${offset}&limit=${limit}&langru&column=rating`;
             try {
                 const response = await fetch(url);
@@ -168,8 +170,8 @@
                     if (foundPlayer) {
                         document.getElementById('loader').style.display = 'none';
                         document.getElementById('content').style.display = 'block';
-                        await fetchData(offset, limit, true, name);
-                        return true;
+                        await fetchData(offset, limit, true);
+                        return { offset, limit };
                     } else if (players.length === limit) {
                         // Continue searching in the next page
                         return await searchPlayerByName(name, offset + limit, limit);
@@ -187,11 +189,13 @@
         }
 
         function loadMore() {
+            if (searchActive) return;
             offset += limit;
             fetchData(offset, limit);
         }
 
         function prevPage() {
+            if (searchActive) return;
             if (offset >= limit) {
                 offset -= limit;
                 fetchData(offset, limit);
@@ -201,19 +205,31 @@
         async function search() {
             const searchInput = document.getElementById('searchInput').value;
             if (searchInput) {
+                searchActive = true;
+                highlightedPlayer = searchInput;
+                clearInterval(intervalId);
                 document.getElementById('loader').style.display = 'block';
                 document.getElementById('content').style.display = 'none';
-                const found = await searchPlayerByName(searchInput);
-                if (!found) {
+                const result = await searchPlayerByName(searchInput, offset, limit);
+                if (!result) {
                     document.getElementById('loader').textContent = 'Пользователь не найден.';
+                } else {
+                    offset = result.offset;
+                    limit = result.limit;
                 }
+                searchActive = false;
+                intervalId = setInterval(() => {
+                    fetchData(offset, limit, true);
+                }, 5000);
             }
         }
 
         async function initialize() {
             await fetchData(offset, limit);
             intervalId = setInterval(() => {
-                fetchData(offset, limit, true);
+                if (!searchActive) {
+                    fetchData(offset, limit, true);
+                }
             }, 5000);
         }
 
