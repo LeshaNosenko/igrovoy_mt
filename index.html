@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Игровой вызов - Первый турнир Результаты</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background: url('https://challenge.tanki.su/static/media/random.5cccd95b6a403cc8f146.webp') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .widget {
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            transition: transform 0.5s ease;
+            overflow: auto;
+        }
+        .widget h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .highlight {
+            background-color: yellow;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #pagination {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 10px;
+        }
+        #loadMoreBtn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget" id="widget">
+        <h2>Игровой вызов - Первый турнир Результаты</h2>
+        <div id="loader" class="loader"></div>
+        <div id="content" style="display: none;">
+            <input type="text" id="searchInput" placeholder="Введите никнейм">
+            <button id="searchBtn">Поиск</button>
+            <div id="pagination">
+                <button id="prevBtn" disabled>Назад</button>
+                <button id="loadMoreBtn">Показать еще</button>
+            </div>
+            <table id="playersTable">
+                <thead>
+                    <tr>
+                        <th>Имя</th>
+                        <th>Позиция</th>
+                        <th>Победы</th>
+                        <th>Бои</th>
+                        <th>История рейтинга по 15 боям</th>
+                        <th>Максимум опыта</th>
+                        <th>Среднее по 15 боям</th>
+                    </tr>
+                </thead>
+                <tbody id="playersBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let offset = 0;
+        const limit = 40;
+
+        async function fetchData(offset, limit, clearTable = true, highlightName = null) {
+            const url = `https://challenge.tanki.su/api/v1/tournaments/585?offset=${offset}&limit=${limit}&langru&column=rating`;
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const responseData = await response.json();
+                console.log('Fetched data:', responseData);
+
+                const players = responseData.data.participants;
+
+                if (players && Array.isArray(players)) {
+                    const playersBody = document.getElementById('playersBody');
+
+                    if (clearTable) {
+                        playersBody.innerHTML = ''; // Очищаем таблицу только при первой загрузке
+                    }
+
+                    players.forEach(player => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${player.user.name}</td>
+                            <td>${player.position}</td>
+                            <td>${player.results.wins}</td>
+                            <td>${player.results.battles}</td>
+                            <td>${player.results.history.join(', ')}</td>
+                            <td>${player.results.max}</td>
+                            <td>${player.results.avg.toFixed(2)}</td>
+                        `;
+                        playersBody.appendChild(tr);
+
+                        if (highlightName && player.user.name.toLowerCase() === highlightName.toLowerCase()) {
+                            tr.classList.add('highlight');
+                            setTimeout(() => {
+                                tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 500); // Delay to ensure element is in DOM and styled
+                        }
+                    });
+
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+
+                    // Manage pagination buttons
+                    document.getElementById('prevBtn').disabled = offset === 0;
+                } else {
+                    throw new Error('Unexpected data structure');
+                }
+            } catch (error) {
+                document.getElementById('loader').textContent = 'Ошибка загрузки данных.';
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        async function searchPlayerByName(name, offset = 0, limit = 40) {
+            const url = `https://challenge.tanki.su/api/v1/tournaments/585?offset=${offset}&limit=${limit}&langru&column=rating`;
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const responseData = await response.json();
+                const players = responseData.data.participants;
+
+                if (players && Array.isArray(players)) {
+                    const foundPlayer = players.find(player => player.user.name.toLowerCase() === name.toLowerCase());
+
+                    if (foundPlayer) {
+                        document.getElementById('loader').style.display = 'none';
+                        document.getElementById('content').style.display = 'block';
+                        await fetchData(offset, limit, true, name); // Load the page with the found player
+                        return true; // Player found, exit function
+                    } else if (players.length === limit) {
+                        // Continue searching in the next page
+                        return await searchPlayerByName(name, offset + limit, limit);
+                    } else {
+                        // Player not found after exhausting all pages
+                        return false;
+                    }
+                } else {
+                    throw new Error('Unexpected data structure');
+                }
+            } catch (error) {
+                document.getElementById('loader').textContent = 'Ошибка загрузки данных.';
+                console.error('Error fetching data:', error);
+                return false;
+            }
+        }
+
+        function loadMore() {
+            offset += limit;
+            fetchData(offset, limit);
+        }
+
+        function prevPage() {
+            if (offset >= limit) {
+                offset -= limit;
+                fetchData(offset, limit);
+            }
+        }
+
+        async function search() {
+            const searchInput = document.getElementById('searchInput').value;
+            if (searchInput) {
+                document.getElementById('loader').style.display = 'block';
+                document.getElementById('content').style.display = 'none';
+                const found = await searchPlayerByName(searchInput);
+                if (!found) {
+                    document.getElementById('loader').textContent = 'Пользователь не найден.';
+                }
+            }
+        }
+
+        async function initialize() {
+            await fetchData(offset, limit);
+        }
+
+        initialize();
+
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const searchBtn = document.getElementById('searchBtn');
+
+        loadMoreBtn.addEventListener('click', loadMore);
+        prevBtn.addEventListener('click', prevPage);
+        searchBtn.addEventListener('click', search);
+    </script>
+</body>
+</html>
