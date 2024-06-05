@@ -113,7 +113,7 @@
                     const playersBody = document.getElementById('playersBody');
 
                     if (clearTable) {
-                        playersBody.innerHTML = ''; // Очищаем таблицу только при первой загрузке
+                        playersBody.innerHTML = '';
                     }
 
                     players.forEach(player => {
@@ -133,14 +133,13 @@
                             tr.classList.add('highlight');
                             setTimeout(() => {
                                 tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }, 500); // Delay to ensure element is in DOM and styled
+                            }, 500);
                         }
                     });
 
                     document.getElementById('loader').style.display = 'none';
                     document.getElementById('content').style.display = 'block';
 
-                    // Manage pagination buttons
                     document.getElementById('prevBtn').disabled = offset === 0;
                 } else {
                     throw new Error('Unexpected data structure');
