@@ -4,62 +4,81 @@
     <meta charset="UTF-8">
     <title>Игровой вызов - Первый турнир Результаты</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            color: #333;
-            background: url('https://challenge.tanki.su/static/media/random.5cccd95b6a403cc8f146.webp') no-repeat center center fixed;
-            background-size: cover;
-        }
-        .widget {
-            padding: 20px;
-            border-radius: 10px;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            transition: transform 0.5s ease;
-            overflow: auto;
-        }
-        .widget h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .highlight {
-            background-color: yellow;
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 4px solid #3498db;
-            width: 40px;
-            height: 40px;
-            animation: spin 2s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        #pagination {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin-top: 10px;
-        }
-        #loadMoreBtn {
-            margin-top: 10px;
-        }
+		body {
+			font-family: Arial, sans-serif;
+			color: #fff;
+			background-color: #fff;
+		}
+
+		.widget {
+			padding: 20px;
+			border-radius: 10px;
+			width: 100%;
+			background-color: rgba(255, 255, 255, 0.8);
+			transition: transform 0.5s ease;
+			overflow: auto;
+			background-color: #2f2f2f;
+		}be7b06
+
+		.widget h2 {
+			font-size: 20px;
+			margin-bottom: 10px;
+		}
+
+		table {
+			color: #8c8c7e;
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 10px;
+		}
+
+		th, td {
+			border: 1px solid hsla(60,7%,52%,.07);
+			padding: 8px;
+			text-align: left;
+		}
+
+		td.player-name {
+			color: #fff;
+		}
+
+		td.player-position {
+			color: #ff7e00;
+		}
+
+		th {
+			background-color: #43423c;
+		}
+
+		.highlight {
+			background-color: yellow;
+		}
+
+		.loader {
+			border: 4px solid #f3f3f3;
+			border-radius: 50%;
+			border-top: 4px solid #3498db;
+			width: 40px;
+			height: 40px;
+			animation: spin 2s linear infinite;
+			margin: 0 auto;
+		}
+
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+
+		#pagination {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			margin-top: 10px;
+		}
+
+		#loadMoreBtn {
+			margin-top: 10px;
+		}
     </style>
 </head>
 <body>
@@ -76,10 +95,10 @@
             <table id="playersTable">
                 <thead>
                     <tr>
-                        <th>Имя</th>
                         <th>Позиция</th>
-                        <th>Победы</th>
+						<th>Имя</th>
                         <th>Бои</th>
+						<th>Победы</th>
 						<th>Суммарный опыт</th>
                         <th>История рейтинга по 15 боям</th>
                         <th>Максимум опыта</th>
@@ -122,15 +141,15 @@
                     players.forEach(player => {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>${player.user.name}</td>
-                            <td>${player.position}</td>
-                            <td>${player.results.wins}</td>
-                            <td>${player.results.battles}</td>
-							<td>${player.results.total}</td>
-                            <td>${player.results.history.join(', ')}</td>
-                            <td>${player.results.max}</td>
-                            <td>${player.results.avg.toFixed(2)}</td>
-                        `;
+						<td class="player-position">${player.position}</td>
+						<td class="player-name">${player.user.name}</td>
+						<td>${player.results.battles}</td>
+						<td>${player.results.wins}</td>
+						<td>${player.results.total}</td>
+						<td>${player.results.history.join(', ')}</td>
+						<td>${player.results.max}</td>
+						<td>${player.results.avg.toFixed(2)}</td>
+					`;
                         playersBody.appendChild(tr);
 
                         if (highlightedPlayer && player.user.name.toLowerCase() === highlightedPlayer.toLowerCase()) {
