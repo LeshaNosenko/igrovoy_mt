@@ -80,6 +80,7 @@
                         <th>Позиция</th>
                         <th>Победы</th>
                         <th>Бои</th>
+						<th>Суммарный опыт</th>
                         <th>История рейтинга по 15 боям</th>
                         <th>Максимум опыта</th>
                         <th>Среднее по 15 боям</th>
@@ -125,6 +126,7 @@
                             <td>${player.position}</td>
                             <td>${player.results.wins}</td>
                             <td>${player.results.battles}</td>
+							<td>${player.results.total}</td>
                             <td>${player.results.history.join(', ')}</td>
                             <td>${player.results.max}</td>
                             <td>${player.results.avg.toFixed(2)}</td>
