@@ -109,6 +109,47 @@
 			transform: rotate(0deg);
 			border-top-color: #e74c3c;
 		}
+		
+        #searchBtn, #prevBtn, #loadMoreBtn {
+            align-items: center;
+            background: none;
+            border: none;
+            color: #f25322;
+            cursor: pointer;
+            display: flex;
+            font-size: 14px;
+            font-weight: 700;
+            justify-content: center;
+            line-height: 16px;
+            margin-left: 0;
+            position: relative;
+            text-align: center;
+            text-transform: uppercase
+        }
+
+        #searchInput {
+            padding: 1px;
+            border: 1px solid #f25322;
+            border-radius: 4px;
+            margin-right: 1px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #2f2f2f;
+            outline: none;
+        }
+
+        #searchInput::placeholder {
+            color: #8c8c7e;
+        }
+
+        #searchInput:focus {
+            border-color: #f25322;
+        }
+		
+		.search-container {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -116,8 +157,10 @@
         <h2>Игровой вызов - Первый турнир Результаты. Данные обновляются каждые 5 секунд.</h2>
         <div id="loader" class="loader"></div>
         <div id="content" style="display: none;">
-            <input type="text" id="searchInput" placeholder="Введите никнейм">
-            <button id="searchBtn">Поиск</button>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Введите никнейм">
+                <button id="searchBtn">Поиск</button>
+            </div>
             <div id="pagination">
                 <button id="prevBtn" disabled>Назад</button>
                 <button id="loadMoreBtn">Показать еще</button>
