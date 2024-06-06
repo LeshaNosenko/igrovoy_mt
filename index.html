@@ -181,6 +181,9 @@
 			  opacity: 1;
 		  }
 		
+		h3 {
+		  color: red;
+		}
     </style>
 </head>
 <body>
@@ -188,7 +191,7 @@
         <h2>Игровой вызов - Первый турнир - Результаты. Данные обновляются каждые 5 секунд.</h2>
         <div id="loader" class="loader"></div>
         <div id="content" style="display: none;">
-		<h3>Игроки, чей опыт свыше 2700</h3>
+		<h3>Игроки, чей опыт свыше 2700!!!</h3>
 		<div id="highExperiencePlayers" style="margin-bottom: 20px;"></div>
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Введите никнейм">
@@ -276,14 +279,17 @@
 					const headerRow = document.createElement('tr');
 					highExperienceContainer.appendChild(highExperienceTable);
 					const UpdateAtHeader = document.createElement('th');
+					const PositionHeader = document.createElement('th');
 					const playerNameHeader = document.createElement('th');
 					const maxExperienceHeader = document.createElement('th');
 
 					UpdateAtHeader.textContent = 'Дата обновления';
+					PositionHeader.textContent = 'Позиция';
 					playerNameHeader.textContent = 'Имя';
 					maxExperienceHeader.textContent = 'Максимальный опыт';
 
 					headerRow.appendChild(UpdateAtHeader);
+					headerRow.appendChild(PositionHeader);
 					headerRow.appendChild(playerNameHeader);
 					headerRow.appendChild(maxExperienceHeader);
 					tableHeader.appendChild(headerRow);
@@ -294,6 +300,7 @@
 					highExperiencePlayers.forEach(player => {
 						const row = document.createElement('tr');
 						const UpdateAtCell = document.createElement('td');
+						const PositionCell = document.createElement('td');
 						const playerNameCell = document.createElement('td');
 						const maxExperienceCell = document.createElement('td');
 
@@ -305,10 +312,12 @@
 						const formattedDateTime = `${formattedDate} ${formattedTime}`;
 
 						UpdateAtCell.textContent = formattedDateTime;
+						PositionCell.textContent = player.position
 						playerNameCell.textContent = player.user.name;
 						maxExperienceCell.textContent = player.results.max;
 						
 						row.appendChild(UpdateAtCell);
+						row.appendChild(PositionCell);
 						row.appendChild(playerNameCell);
 						row.appendChild(maxExperienceCell);
 						tableBody.appendChild(row);
