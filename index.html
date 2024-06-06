@@ -263,7 +263,7 @@
 						const formattedDateTime = `${formattedDate} ${formattedTime}`;
 						const tr = document.createElement('tr');
 						const mark_l = player.results.best.vehicle ? responseData.data.vehicle_names[player.results.best.vehicle].mark_l.ru : 'N/A';
-						const maxBattle = Math.max(...player.results.history);
+						const maxBattle = player.results.max;
 						tr.innerHTML = `
 						<td class="player-updated_at">${formattedDateTime}</td>
 						<td class="player-position">${player.position}</td>
