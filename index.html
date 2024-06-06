@@ -59,6 +59,8 @@
         color: #8c8c7e;
 		font-weight: 700
         }
+		
+		best-battle-info
 
         th {
             background-color: #2f2f2f;
@@ -154,6 +156,32 @@
             display: flex;
             align-items: center;
         }
+		
+		.tooltip {
+			position: absolute;
+			visibility: hidden;
+			width: 100px;
+			background-color: #000000;
+			color: #fff;
+			text-align: center;
+			padding: 5px;
+			border-radius: 6px;
+			z-index: 1;
+		}
+
+		.tooltip p {
+			margin: 5px 0;
+		}
+
+		.tooltip .mark_l {
+			color: #ff7e00;
+		}
+
+		.best-battle-info:hover .tooltip {
+			  visibility: visible;
+			  opacity: 1;
+		  }
+		
     </style>
 </head>
 <body>
@@ -234,13 +262,24 @@
 						const formattedTime = playerUpdatedAt.toLocaleTimeString('ru-RU');
 						const formattedDateTime = `${formattedDate} ${formattedTime}`;
 						const tr = document.createElement('tr');
+						const mark_l = player.results.best.vehicle ? responseData.data.vehicle_names[player.results.best.vehicle].mark_l.ru : 'N/A';
+						const maxBattle = Math.max(...player.results.history);
 						tr.innerHTML = `
 						<td class="player-updated_at">${formattedDateTime}</td>
 						<td class="player-position">${player.position}</td>
 						<td class="player-name">${player.user.name}</td>
 						<td>${player.results.battles}</td>
 						<td>${player.results.wins}</td>
-						<td class="player-total">${player.results.total}</td>
+						<td class="player-total">${player.results.total}
+						<div class="best-battle-info" data-mark_l="${mark_l}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="2em" height="2em" fill="currentColor"><path d="M9.669.864 8 0 6.331.864l-1.858.282-.842 1.68-1.337 1.32L2.6 6l-.306 1.854 1.337 1.32.842 1.68 1.858.282L8 12l1.669-.864 1.858-.282.842-1.68 1.337-1.32L13.4 6l.306-1.854-1.337-1.32-.842-1.68L9.669.864zm1.196 1.193.684 1.365 1.086 1.072L12.387 6l.248 1.506-1.086 1.072-.684 1.365-1.51.229L8 10.874l-1.355-.702-1.51-.229-.684-1.365-1.086-1.072L3.614 6l-.25-1.506 1.087-1.072.684-1.365 1.51-.229L8 1.126l1.356.702 1.509.229z"></path><path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z"></path></svg><div class="tooltip">${mark_l}</div>
+							<div class="tooltip">
+								<p>Лучший бой</p>
+								<p>Техника <span class="mark_l">${mark_l}</span></p>
+								<p>Опыт: ${maxBattle}</p>
+							</div>
+						</div>
+						</td>
 						<td class="player-history" data-sort-order="${globalSortOrder}">
 							<span>${player.results.history.join(', ')}</span>
 						</td>
