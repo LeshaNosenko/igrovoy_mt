@@ -263,7 +263,7 @@
 						const formattedTime = playerUpdatedAt.toLocaleTimeString('ru-RU');
 						const formattedDateTime = `${formattedDate} ${formattedTime}`;
 						const tr = document.createElement('tr');
-						const mark_l = player.results.best.vehicle ? responseData.data.vehicle_names[player.results.best.vehicle].mark_l.ru : 'N/A';
+						const mark_l = player.results.best.vehicle ? responseData.data.vehicle_names[player.results.best.vehicle].mark_l.ru : '-';
 						const maxBattle = player.results.max;
 						
 						const calculatePrize = (position) => {
@@ -369,6 +369,8 @@
                 clearInterval(intervalId);
                 document.getElementById('loader').style.display = 'block';
                 document.getElementById('content').style.display = 'none';
+				offset = 0;
+				limit = 40;
                 const result = await searchPlayerByName(searchInput, offset, limit);
                 if (!result) {
                     document.getElementById('loader').textContent = 'Пользователь не найден.';
