@@ -215,6 +215,42 @@
 				console.error('Error fetching data:', error);
 			}
 		}
+		
+		function loadMore() {
+            if (searchActive) return;
+            offset += limit;
+            fetchData(offset, limit);
+        }
+
+        function prevPage() {
+            if (searchActive) return;
+            if (offset >= limit) {
+                offset -= limit;
+                fetchData(offset, limit);
+            }
+        }
+		
+		async function search() {
+            const searchInput = document.getElementById('searchInput').value;
+            if (searchInput) {
+                searchActive = true;
+                highlightedPlayer = searchInput;
+                clearInterval(intervalId);
+                document.getElementById('loader').style.display = 'block';
+                document.getElementById('content').style.display = 'none';
+                const result = await searchPlayerByName(searchInput, offset, limit);
+                if (!result) {
+                    document.getElementById('loader').textContent = 'Пользователь не найден.';
+                } else {
+                    offset = result.offset;
+                    limit = result.limit;
+                }
+                searchActive = false;
+                intervalId = setInterval(() => {
+                    fetchData(offset, limit, true);
+                }, 5000);
+            }
+        }
 
 		function sortColumn(columnName) {
 			if (globalSortOrder === 'desc') {
