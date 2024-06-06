@@ -229,6 +229,7 @@
 						}
 
 						const playerUpdatedAt = new Date(player.updated_at);
+						playerUpdatedAt.setHours(playerUpdatedAt.getHours() + 3);
 						const formattedDate = playerUpdatedAt.toLocaleDateString('ru-RU');
 						const formattedTime = playerUpdatedAt.toLocaleTimeString('ru-RU');
 						const formattedDateTime = `${formattedDate} ${formattedTime}`;
