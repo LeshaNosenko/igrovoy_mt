@@ -255,8 +255,8 @@
                 <tbody id="playersBody"></tbody>
             </table>
 			<div id="pagination">
-				<button id="prevBtn" disabled>Предыдущие 40 участников</button>
-				<button id="loadMoreBtn">Следующие 40 участников</button>
+				<button id="prevBtn2" disabled>Предыдущие 40 участников</button>
+				<button id="loadMoreBtn2">Следующие 40 участников</button>
 			</div>
         </div>
     </div>
@@ -379,6 +379,7 @@
 					document.getElementById('content').style.display = 'block';
 
 					document.getElementById('prevBtn').disabled = offset === 0;
+					document.getElementById('prevBtn2').disabled = offset === 0;
 				} else {
 					throw new Error('Unexpected data structure');
 				}
@@ -492,9 +493,16 @@
 		const loadMoreBtn = document.getElementById('loadMoreBtn');
 		const prevBtn = document.getElementById('prevBtn');
 		const searchBtn = document.getElementById('searchBtn');
+	
+		const loadMoreBtn2 = document.getElementById('loadMoreBtn2');
+		const prevBtn2 = document.getElementById('prevBtn2');
 
 		loadMoreBtn.addEventListener('click', loadMore);
 		prevBtn.addEventListener('click', prevPage);
+		
+		loadMoreBtn2.addEventListener('click', loadMore);
+		prevBtn2.addEventListener('click', prevPage);
+	
 		searchBtn.addEventListener('click', search);
 
 		window.addEventListener('beforeunload', () => {
