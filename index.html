@@ -437,9 +437,7 @@
                     limit = result.limit;
                 }
                 searchActive = false;
-                intervalId = setInterval(() => {
                     fetchData(offset, limit, true);
-                }, 5000);
             }
         }
 
