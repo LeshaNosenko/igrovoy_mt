@@ -1,4 +1,4 @@
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Игровой вызов - Первый турнир Результаты</title>
@@ -312,7 +312,7 @@
 				const response = await fetch(url);
 
 				if (!response.ok) {
-					throw new Error('Network response was not ok ' + response.statusText);
+					throw new Error('Произошла ошибка загрузки турнира, скорее всего турнир закончился ' + response.statusText);
 				}
 
 				const responseData = await response.json();
@@ -486,7 +486,7 @@
                 const response = await fetch(url);
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
+                    throw new Error('Произошла ошибка загрузки турнира, скорее всего турнир закончился ' + response.statusText);
                 }
 
                 const responseData = await response.json();
@@ -506,7 +506,7 @@
                         return false;
                     }
                 } else {
-                    throw new Error('Unexpected data structure');
+                    throw new Error('Ошибка парсинга структуры');
                 }
             } catch (error) {
                 document.getElementById('loader').textContent = 'Ошибка загрузки данных.';
