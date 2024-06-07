@@ -168,10 +168,15 @@
 			margin-bottom: 10px;
 		}
 
+		.best-battle-info {
+			position: relative;
+			display: inline-block;
+		}
+
 		.tooltip {
 			position: absolute;
 			visibility: hidden;
-			width: 100px;
+			width: 150px;
 			background-color: #000;
 			color: #fff;
 			text-align: center;
@@ -179,10 +184,14 @@
 			border-radius: 6px;
 			z-index: 1;
 			transition: visibility 0.3s, opacity 0.3s;
+			left: 100%;
+			margin-left: 10px;
+			top: 100%;
+			transform: translateY(-50%);
 		}
 
 		.tooltip p {
-			margin: 5px 0;
+			margin: 1px 0;
 		}
 
 		.tooltip .mark_l {
