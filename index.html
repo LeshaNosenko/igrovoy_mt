@@ -224,11 +224,25 @@
 			display: flex;
 			align-items: center;
 		}
+		
 
 		.header-text {
 			flex-grow: 1;
 			text-align: center;
 		}
+		
+		.Participants_title__+IYed {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .Participants_title__+IYed div {
+            display: flex;
+            align-items: center;
+        }
+        .Participants_title_count__Q6wmU {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -246,6 +260,12 @@
                 <button id="prevBtn" disabled>Предыдущие 40 участников</button>
                 <button id="loadMoreBtn">Следующие 40 участников</button>
             </div>
+			<h3 class="Participants_title__+IYed">
+			<div>
+				<span>Участники:</span>
+				<span class="Participants_title_count__Q6wmU" id="participantsCount">0</span>
+			</div>
+			</h3>
             <table id="playersTable">
                 <thead>
                     <tr>
@@ -284,7 +304,7 @@
         let intervalId = null;
         let highlightedPlayer = null;
 		let globalSortOrder = 'desc';
-
+		
 		async function fetchData(offset, limit, clearTable = true) {
 			const url = `https://challenge.tanki.su/api/v1/tournaments/585?offset=${offset}&limit=${limit}&langru&column=rating`;
 
@@ -299,6 +319,8 @@
 				console.log('Fetched data:', responseData);
 
 				let players = responseData.data.participants;
+				
+				document.getElementById('participantsCount').innerText = responseData.data.participants_count;
 
 				if (players && Array.isArray(players)) {
 					const playersBody = document.getElementById('playersBody');
@@ -390,7 +412,7 @@
 							}, 500);
 						}
 					});
-
+					
 					document.getElementById('loader').style.display = 'none';
 					document.getElementById('content').style.display = 'block';
 
