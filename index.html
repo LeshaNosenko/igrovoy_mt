@@ -5,105 +5,183 @@
     <title>Игровой вызов - Первый турнир Результаты</title>
     <link rel="shortcut icon" href="https://challenge.tanki.su/static/media/random.5cccd95b6a403cc8f146.webp" type="image/x-icon"> 
     <style>
-        :root {
-            --original-background: #2f2f2f;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            color: #fff;
-            background-color: var(--original-background);
-        }
+		:root {
+			--background-color: #1e1e1e;
+			--text-color: #f0f0f0;
+			--position-color: #ffc107;
+			--highlight-color: #1e1e1e; 
+			--accent-color: #f25322;
+			--table-header-bg: #333;
+			--table-border-color: hsla(60,7%,52%,.07);
+			--widget-bg: rgba(255, 255, 255, 0.1);
+		}
 
-        .widget {
-            padding: 20px;
-            border-radius: 10px;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            transition: transform 0.5s ease;
-            overflow: auto;
-			background-color: #2a2929
-        }
+		body {
+			font-family: Arial, sans-serif;
+			color: var(--text-color);
+			background-color: var(--background-color);
+			margin: 0;
+			padding: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+		}
 
-        .widget h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
+		.widget {
+			padding: 20px;
+			border-radius: 10px;
+			width: 90%;
+			max-width: 1200px;
+			background-color: var(--widget-bg);
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+			transition: transform 0.5s ease;
+			overflow: hidden;
+		}
 
-        table {
-            color: #8c8c7e;
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
+		.widget h2 {
+			font-size: 24px;
+			margin-bottom: 20px;
+		}
 
-        th, td {
-            border: 1px solid hsla(60,7%,52%,.07);
-            padding: 8px;
-            text-align: left;
-        }
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 10px;
+		}
 
-		tr,th {
+		th, td {
+			border: 1px solid var(--table-border-color);
+			padding: 0px;
+			text-align: left;
+		}
+
+		th {
+			background-color: var(--table-header-bg);
+			color: var(--text-color);
 			text-align: center;
 		}
 
-        td.player-name {
-            color: #fff;
-        }
+		td.player-name {
+			color: var(--text-color);
+		}
 
-        td.player-position {
-            color: #ff7e00;
-        }
-		
+		td.player-position, 
 		td.player-updated_at {
-            color: #ff7e00;
-        }
-		
+			color: var(--position-color);
+		}
+
 		td.player-total {
 			background-color: hsla(60,7%,52%,.11);
 			color: #8c8c72;
-			font-weight: 700
-        }
-		
-        th {
-            background-color: #2f2f2f;
-        }
+			font-weight: 700;
+			text-align: center;
+		}
 
-        .highlight {
-            background-color: #ffc107;
-        }
+		.highlight {
+			background-color: var(--highlight-color);
+		}
 
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 4px solid #3498db;
-            width: 40px;
-            height: 40px;
-            animation: spin 2s linear infinite;
-            margin: 0 auto;
-        }
+		.loader {
+			border: 4px solid #f3f3f3;
+			border-radius: 50%;
+			border-top: 4px solid #3498db;
+			width: 40px;
+			height: 40px;
+			animation: spin 2s linear infinite;
+			margin: 0 auto;
+		}
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
 
-        #pagination {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin-top: 10px;
-        }
+		#pagination {
+			display: flex;
+			justify-content: space-between;
+			margin-top: 10px;
+		}
 
-        #loadMoreBtn {
-            margin-top: 10px;
-        }
+		button {
+			background: var(--accent-color);
+			border: none;
+			border-radius: 5px;
+			color: #fff;
+			cursor: pointer;
+			padding: 10px 20px;
+			text-transform: uppercase;
+			font-weight: bold;
+			transition: background 0.3s ease;
+		}
 
-        .sort-arrow {
-            display: inline-block;
-            border: 10px solid transparent;
-            transition: transform 0.3s ease;
-        }
+		button:disabled {
+			background: #777;
+			cursor: not-allowed;
+		}
+
+		button:hover:not(:disabled) {
+			background: #e74c3c;
+		}
+
+		#searchInput {
+			padding: 10px;
+			border: 2px solid var(--accent-color);
+			border-radius: 5px;
+			margin-right: 10px;
+			font-size: 14px;
+			background-color: var(--background-color);
+			color: var(--text-color);
+			outline: none;
+			transition: border 0.3s ease;
+		}
+
+		#searchInput::placeholder {
+			color: #8c8c7e;
+		}
+
+		#searchInput:focus {
+			border-color: #e74c3c;
+		}
+
+		.search-container {
+			display: flex;
+			align-items: center;
+			margin-bottom: 10px;
+		}
+
+		.tooltip {
+			position: absolute;
+			visibility: hidden;
+			width: 100px;
+			background-color: #000;
+			color: #fff;
+			text-align: center;
+			padding: 5px;
+			border-radius: 6px;
+			z-index: 1;
+			transition: visibility 0.3s, opacity 0.3s;
+		}
+
+		.tooltip p {
+			margin: 5px 0;
+		}
+
+		.tooltip .mark_l {
+			color: var(--position-color);
+		}
+
+		.best-battle-info:hover .tooltip {
+			visibility: visible;
+			opacity: 1;
+		}
+
+		.sort-arrow {
+			display: inline-block;
+			border: 10px solid transparent;
+			transition: transform 0.3s ease;
+			cursor: pointer;
+		}
 
 		.sort-arrow.up {
 			transform: rotate(180deg);
@@ -114,73 +192,6 @@
 			transform: rotate(0deg);
 			border-top-color: #e74c3c;
 		}
-		
-        #searchBtn, #prevBtn, #loadMoreBtn {
-            align-items: center;
-            background: none;
-            border: none;
-            color: #f25322;
-            cursor: pointer;
-            display: flex;
-            font-size: 10px;
-            font-weight: 700;
-            justify-content: center;
-            line-height: 16px;
-            margin-left: 0;
-            position: relative;
-            text-align: center;
-            text-transform: uppercase
-        }
-
-        #searchInput {
-            padding: 1px;
-            border: 1px solid #f25322;
-            border-radius: 4px;
-            margin-right: 1px;
-            font-size: 14px;
-            color: #fff;
-            background-color: #2f2f2f;
-            outline: none;
-        }
-
-        #searchInput::placeholder {
-            color: #8c8c7e;
-        }
-
-        #searchInput:focus {
-            border-color: #f25322;
-        }
-		
-		.search-container {
-            display: flex;
-            align-items: center;
-        }
-		
-		.tooltip {
-			position: absolute;
-			visibility: hidden;
-			width: 100px;
-			background-color: #000000;
-			color: #fff;
-			text-align: center;
-			padding: 5px;
-			border-radius: 6px;
-			z-index: 1;
-		}
-
-		.tooltip p {
-			margin: 5px 0;
-		}
-
-		.tooltip .mark_l {
-			color: #ff7e00;
-		}
-
-		.best-battle-info:hover .tooltip {
-			  visibility: visible;
-			  opacity: 1;
-		  }
-		
     </style>
 </head>
 <body>
