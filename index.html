@@ -203,6 +203,16 @@
 			transform: rotate(0deg);
 			border-top-color: #e74c3c;
 		}
+		
+		.header-content {
+			display: flex;
+			align-items: center;
+		}
+
+		.header-text {
+			flex-grow: 1;
+			text-align: center;
+		}
     </style>
 </head>
 <body>
@@ -231,9 +241,13 @@
                         <th>Победы</th>
                         <th>Суммарный опыт</th>
                         <th>
-                            15 боёв с наибольшим количеством чистого опыта
-                            <span class="sort-arrow down" onclick="sortColumn('history')" title="Нажмите, чтобы сортировать опыт"></span>
-                        </th>
+							<div class="header-content">
+								<div class="header-text">
+									15 боёв с наибольшим количеством чистого опыта
+								</div>
+								<span class="sort-arrow down" onclick="sortColumn('history')" title="Нажмите, чтобы сортировать опыт"></span>
+							</div>
+						</th>
                         <th>Максимальный опыт</th>
                         <th>Средний опыт по 15 боям</th>
                     </tr>
