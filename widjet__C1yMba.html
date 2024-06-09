@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Игровой вызов - Результаты игрока C1yMba</title>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #1c1c1c;
+            --text-color: #e0e0e0;
+            --highlight-color: #FF6347;
+            --table-bg-color: #2e2e2e;
+            --table-border-color: #3d3d3d; 
+            --label-color: #b0b0b0;
+            --table-text-color: #FFFFFF; 
+            --box-shadow-color: rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .widget {
+            width: 250px; 
+            background-color: var(--table-bg-color);
+            padding: 15px;
+            box-sizing: border-box;
+            border: 2px solid var(--highlight-color);
+            border-radius: 10px; 
+            box-shadow: 0 0 10px var(--box-shadow-color);
+            overflow-y: auto;
+        }
+
+        .highlight {
+            color: var(--highlight-color);
+        }
+
+        .loader {
+            border: 4px solid rgba(243, 243, 243, 0.2);
+            border-radius: 50%;
+            border-top: 4px solid var(--highlight-color);
+            width: 25px; 
+            height: 25px; 
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+		.player-data {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		
+		.player-data-item {
+			display: inline-block;
+			vertical-align: middle;
+		}
+
+        .label {
+            font-weight: bold;
+        }
+
+        .experience-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(5, auto);
+            gap: 3px;
+            background-color: var(--table-bg-color);
+            border: 1px solid var(--table-border-color); 
+            padding: 5px;
+            border-radius: 5px; 
+            margin-bottom: 8px; 
+			color: white;
+			font-weight: bold;
+        }
+
+		.experience-item {
+			font-family: 'Roboto', sans-serif;
+			padding: 3px;
+			background-color: var(--highlight-color); 
+			border-radius: 3px; 
+			text-align: center;
+			font-weight: bolder;
+			font-size: 14px;
+			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale; 
+            color: var(--table-text-color);
+		}
+    </style>
+</head>
+<body>
+    <div class="widget" id="widget">
+        <div id="loader" class="loader"></div>
+        <div id="content" style="display: none;">
+            <div id="playerData"></div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchPlayerPosition(playerId) {
+            const positionUrl = `https://challenge.tanki.su/api/v1/tournaments/585/player/${playerId}?sortby=rating`;
+
+            try {
+                const response = await fetch(positionUrl);
+
+                if (!response.ok) {
+                    throw new Error('Данных нет, скорее всего закончился турнир и можно убрать виджет из обс' + response.statusText);
+                }
+
+                const responseData = await response.json();
+
+                const position = responseData.data;
+
+                return position;
+            } catch (error) {
+                console.error('Данных нет, скорее всего закончился турнир и можно убрать виджет из обс', error);
+                return null;
+            }
+        }
+
+        async function fetchPlayerData(playerId) {
+            const position = await fetchPlayerPosition(playerId);
+            if (position === null) {
+                console.error('Failed to fetch player position');
+                return;
+            }
+
+            const offset = position - 1;
+            const url = `https://challenge.tanki.su/api/v1/tournaments/585?offset=${offset}&limit=1&lang=ru&column=rating`;
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error('Данных нет, скорее всего закончился турнир и можно убрать виджет из обс' + response.statusText);
+                }
+
+				const responseData = await response.json();
+
+                let players = responseData.data.participants;
+
+                if (players && Array.isArray(players)) {
+                    const player = players.find(player => player.user.spa_id === playerId);
+
+				if (player) {
+					const playerData = document.getElementById('playerData');
+					playerData.innerHTML = '';
+
+					const createPlayerDataItem = (label, value) => {
+					const div = document.createElement('div');
+					div.className = 'player-data-item';
+					div.innerHTML = `<span class="label">${label}:</span> <span class="highlight" style="font-size: 16px;">${value}</span>`;
+					return div;
+				};
+
+					const createExperienceList = (experienceHistory) => {
+						const experienceContainer = document.createElement('div');
+						experienceContainer.className = 'experience-container';
+						experienceHistory.slice(0, 15).forEach((exp, index) => {
+							const expItem = document.createElement('div');
+							expItem.className = 'experience-item';
+							expItem.textContent = `${index + 1}. ${exp}`;
+							experienceContainer.appendChild(expItem);
+						});
+						return experienceContainer;
+					};
+
+					const PersentData = document.createElement('div');
+					PersentData.appendChild(createPlayerDataItem('Победы', player.results.wins));
+					PersentData.appendChild(createPlayerDataItem('&nbsp&nbsp&nbsp&nbspПроцент', Math.round((player.results.wins / player.results.battles) * 100) + '%'));
+					const minExperience = Math.min(...player.results.history.slice(0, 15));
+					const maxExperience = Math.max(...player.results.history.slice(0, 15));
+
+					const leftData = document.createElement('div');
+					leftData.className = 'player-data';
+					leftData.appendChild(createPlayerDataItem('Место', player.position));
+					leftData.appendChild(createPlayerDataItem('Бои', player.results.battles));
+					
+
+					const rightData = document.createElement('div');
+					rightData.className = 'player-data';
+					rightData.appendChild(createPlayerDataItem('Мин', minExperience));
+					rightData.appendChild(createPlayerDataItem('Макс', maxExperience));
+					
+					const MiddleData = document.createElement('div');
+					MiddleData.appendChild(createPlayerDataItem('Сумма', player.results.total));
+
+					const experienceData = createExperienceList(player.results.history.sort((a, b) => b - a));
+
+					playerData.appendChild(leftData);
+					playerData.appendChild(PersentData);
+					playerData.appendChild(MiddleData);
+					playerData.appendChild(experienceData);
+					playerData.appendChild(rightData);
+				} else {
+					alert('Player not found');
+				}
+        }
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+    } finally {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+    }
+}
+
+setInterval(() => fetchPlayerData(76741065), 5000);
+fetchPlayerData(76741065);
+</script>
+</body>
+</html>
