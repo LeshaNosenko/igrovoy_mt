@@ -582,14 +582,6 @@
 						return prize ? `<img src="${prize.icon}" alt="Gold Icon"> ${prize.prize}` : 'Потейте:)';
 					};
 						
-						 if (player.position === 1) {
-							tr.classList.add('gold-position');
-						} else if (player.position === 2) {
-							tr.classList.add('silver-position');
-						} else if (player.position === 3) {
-							tr.classList.add('bronze-position');
-						}
-						
 						const prize = calculatePrize(player.position);
 						const percent_wins = Math.round((player.results.wins / player.results.battles) * 100) + '%'
 						tr.innerHTML = `
@@ -621,7 +613,15 @@
 						<td>${player.results.avg.toFixed(2)}</td>
 					`;
 						playersBody.appendChild(tr);
-
+						
+					if (player.position === 1) {
+						tr.querySelector('.player-position').classList.add('gold-position');
+					} else if (player.position === 2) {
+						tr.querySelector('.player-position').classList.add('silver-position');
+					} else if (player.position === 3) {
+						tr.querySelector('.player-position').classList.add('bronze-position');
+					}
+						
 						if (highlightedPlayer && player.user.name.toLowerCase() === highlightedPlayer.toLowerCase()) {
 							tr.classList.add('highlight');
 							setTimeout(() => {
